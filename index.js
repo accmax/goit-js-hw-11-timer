@@ -1,44 +1,39 @@
-const refs = {
-  daysEl: document.querySelector('.value[data-value = "days"]'),
-  hoursEl: document.querySelector('.value[data-value="hours"]'),
-  minsEl: document.querySelector('.value[data-value="mins"]'),
-  secondsEl: document.querySelector('.value[data-value="secs"]'),
-}
-
-
 class CountdownTimer {
+  refsEl = {};
   timeComponents = { days: 0, hours: 0, mins: 0, secs: 0 };
 
-  constructor({targetDate}) {
+  constructor ({selector, targetDate}){
+    this.refsEl.daysEl = document.querySelector(`${selector} .value[data-value="days"]`);
+    this.refsEl.hoursEl = document.querySelector(`${selector} .value[data-value="hours"]`);
+    this.refsEl.minsEl = document.querySelector(`${selector} .value[data-value="mins"]`);
+    this.refsEl.secsEl = document.querySelector(`${selector} .value[data-value="secs"]`);
     this.targetDate = targetDate;
   }
 
-  start() {
-     setInterval(() => {
-      const currentTime = Date.now();
-      const deltaTime = this.targetDate - currentTime;
-      this.getTimeComponents(deltaTime);
-      this.updCounter()
-    }, 1000);
+  getTimeComponents(time) {
+  this.timeComponents.days = Math.floor(time / (1000 * 60 * 60 * 24));
+  this.timeComponents.hours = Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  this.timeComponents.mins = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
+  this.timeComponents.secs = Math.floor((time % (1000 * 60)) / 1000);
   }
 
   pad(value) {
   return String(value).padStart(2, '0');
   }
-
-  getTimeComponents(time) {
-  this.timeComponents.days = this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
-  this.timeComponents.hours = this.pad(Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
-  this.timeComponents.mins = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
-  this.timeComponents.secs = this.pad(Math.floor((time % (1000 * 60)) / 1000));
-  }
   
   updCounter() {
-  refs.daysEl.textContent = this.timeComponents.days;
-  refs.hoursEl.textContent = this.timeComponents.hours;
-  refs.minsEl.textContent = this.timeComponents.mins;
-  refs.secondsEl.textContent = this.timeComponents.secs;
- } 
+  this.refsEl.daysEl.textContent = this.pad(this.timeComponents.days);
+  this.refsEl.hoursEl.textContent = this.pad(this.timeComponents.hours);
+  this.refsEl.minsEl.textContent = this.pad(this.timeComponents.mins);
+  this.refsEl.secsEl.textContent = this.pad(this.timeComponents.secs);
+  }
+  
+  start() {
+    setInterval(() => {
+      this.getTimeComponents(this.targetDate.getTime() - Date.now());
+      this.updCounter()
+    }, 1000);
+  }
 };
 
 const timer = new CountdownTimer({
